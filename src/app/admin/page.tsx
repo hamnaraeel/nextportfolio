@@ -37,7 +37,12 @@ interface Project {
   featured: boolean;
   published: boolean;
   category: { name: string; color: string };
-  media: any[];
+  media: Array<{
+    id: string;
+    type: string;
+    url: string;
+    altText: string | null;
+  }>;
 }
 
 const AdminDashboard = () => {

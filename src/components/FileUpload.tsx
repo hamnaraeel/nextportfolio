@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Upload, X, Image, Video, Star } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
+import { Upload, X, Image as ImageIcon, Video, Star } from "lucide-react";
 
 interface FileUploadProps {
   projectId: string;
@@ -22,12 +23,7 @@ export default function FileUpload({ projectId, onUploadSuccess }: FileUploadPro
   const [media, setMedia] = useState<ProjectMedia[]>([]);
   const [loadingMedia, setLoadingMedia] = useState(false);
 
-  // Fetch existing media when component mounts
-  useEffect(() => {
-    fetchMedia();
-  }, [projectId]);
-
-  const fetchMedia = async () => {
+  const fetchMedia = useCallback(async () => {
     setLoadingMedia(true);
     try {
       const response = await fetch(`/api/projects/${projectId}/media`);
@@ -40,7 +36,12 @@ export default function FileUpload({ projectId, onUploadSuccess }: FileUploadPro
     } finally {
       setLoadingMedia(false);
     }
-  };
+  }, [projectId]);
+
+  // Fetch existing media when component mounts
+  useEffect(() => {
+    fetchMedia();
+  }, [fetchMedia]);
 
   const handleUpload = async (files: FileList, type: "IMAGE" | "VIDEO" | "THUMBNAIL") => {
     if (!files.length) return;
@@ -120,7 +121,7 @@ export default function FileUpload({ projectId, onUploadSuccess }: FileUploadPro
     switch (type) {
       case "IMAGE":
       case "THUMBNAIL":
-        return <Image className="h-4 w-4" />;
+        return <ImageIcon className="h-4 w-4" />;
       case "VIDEO":
         return <Video className="h-4 w-4" />;
       default:
@@ -174,7 +175,7 @@ export default function FileUpload({ projectId, onUploadSuccess }: FileUploadPro
           onDragOver={handleDrag}
           onDrop={(e) => handleDrop(e, "IMAGE")}
         >
-          <Image className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+          <ImageIcon className="h-8 w-8 text-blue-500 mx-auto mb-2" />
           <p className="text-sm font-medium text-gray-900 mb-1">Images</p>
           <p className="text-xs text-gray-500 mb-2">Screenshots, photos</p>
           <input
@@ -267,9 +268,11 @@ export default function FileUpload({ projectId, onUploadSuccess }: FileUploadPro
                     controls
                   />
                 ) : (
-                  <img
+                  <Image
                     src={item.url}
                     alt={item.altText || "Project media"}
+                    width={200}
+                    height={128}
                     className="w-full h-32 object-cover rounded"
                   />
                 )}
