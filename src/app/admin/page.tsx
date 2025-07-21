@@ -7,7 +7,6 @@ import {
   FolderOpen,
   Tags,
   Upload,
-  Settings,
   BarChart3,
   Plus,
   Edit,
@@ -208,8 +207,6 @@ const AdminDashboard = () => {
     { id: "overview", label: "Overview", icon: BarChart3 },
     { id: "projects", label: "Projects", icon: FolderOpen },
     { id: "categories", label: "Categories", icon: Tags },
-    { id: "media", label: "Media", icon: Upload },
-    { id: "settings", label: "Settings", icon: Settings },
   ];
 
   return (
@@ -770,63 +767,6 @@ const AdminDashboard = () => {
                     )}
                   </div>
                 ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === "media" && (
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-8">Media Management</h1>
-              <div className="bg-white rounded-lg shadow p-8 text-center">
-                <Upload className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Media Upload Feature
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  File upload functionality will be implemented here. You can upload images and videos for your projects.
-                </p>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
-                  Upload Files
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "settings" && (
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-8">Settings</h1>
-              <div className="bg-white rounded-lg shadow p-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Application Settings
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  General settings and configuration options will be available here.
-                </p>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Site Title
-                    </label>
-                    <input
-                      type="text"
-                      defaultValue="Portfolio"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Site Description
-                    </label>
-                    <textarea
-                      defaultValue="A showcase of my projects and skills"
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                    />
-                  </div>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
-                    Save Settings
-                  </button>
-                </div>
               </div>
             </div>
           )}

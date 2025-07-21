@@ -3,7 +3,22 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ExternalLink, Github } from "lucide-react";
 
-async function getFeaturedProjects() {
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  liveUrl: string | null;
+  githubUrl: string | null;
+  category: {
+    name: string;
+  };
+  media: Array<{
+    url: string;
+    altText: string | null;
+  }>;
+}
+
+async function getFeaturedProjects(): Promise<Project[]> {
   try {
     return await prisma.project.findMany({
       where: { featured: true, published: true },
@@ -89,7 +104,7 @@ export default async function Home() {
 
           {featuredProjects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredProjects.map((project) => (
+              {featuredProjects.map((project: Project) => (
                 <div
                   key={project.id}
                   className="bg-white dark:bg-slate-900 rounded-xl shadow-lg hover:shadow-xl transition-shadow overflow-hidden"
