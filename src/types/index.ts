@@ -19,7 +19,7 @@ export interface Category {
   id: string;
   name: string;
   description: string | null;
-  color: string;
+  color: string | null;
   createdAt: Date;
   updatedAt: Date;
   projects?: Project[];

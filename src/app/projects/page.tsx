@@ -4,11 +4,53 @@ import Image from "next/image";
 import { ExternalLink, Github, Filter } from "lucide-react";
 import { Suspense } from "react";
 
+// Types based on actual Prisma returns
+type ProjectWithIncludes = {
+  id: string;
+  title: string;
+  description: string;
+  content: string | null;
+  technologies: string[];
+  liveUrl: string | null;
+  githubUrl: string | null;
+  featured: boolean;
+  published: boolean;
+  categoryId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  category: {
+    id: string;
+    name: string;
+    description: string | null;
+    color: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+  media: {
+    id: string;
+    projectId: string;
+    type: string;
+    url: string;
+    altText: string | null;
+    order: number;
+    createdAt: Date;
+  }[];
+};
+
+type CategoryType = {
+  id: string;
+  name: string;
+  description: string | null;
+  color: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 interface ProjectsPageProps {
-  searchParams: { category?: string };
+  searchParams: Promise<{ category?: string }>;
 }
 
-async function getProjects(categoryId?: string) {
+async function getProjects(categoryId?: string): Promise<ProjectWithIncludes[]> {
   try {
     return await prisma.project.findMany({
       where: {
@@ -30,7 +72,7 @@ async function getProjects(categoryId?: string) {
   }
 }
 
-async function getCategories() {
+async function getCategories(): Promise<CategoryType[]> {
   try {
     return await prisma.category.findMany({
       orderBy: { name: "asc" },
@@ -42,8 +84,9 @@ async function getCategories() {
 }
 
 export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
+  const { category } = await searchParams;
   const [projects, categories] = await Promise.all([
-    getProjects(searchParams.category),
+    getProjects(category),
     getCategories(),
   ]);
 
@@ -86,27 +129,27 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
               <Link
                 href="/projects"
                 className={`px-4 py-2 rounded-lg transition-colors ${
-                  !searchParams.category
+                  !category
                     ? "bg-blue-600 text-white"
                     : "bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700"
                 }`}
               >
                 All Categories
               </Link>
-              {categories.map((category) => (
+              {categories.map((cat: CategoryType) => (
                 <Link
-                  key={category.id}
-                  href={`/projects?category=${category.id}`}
+                  key={cat.id}
+                  href={`/projects?category=${cat.id}`}
                   className={`px-4 py-2 rounded-lg transition-colors ${
-                    searchParams.category === category.id
+                    category === cat.id
                       ? "bg-blue-600 text-white"
                       : "bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700"
                   }`}
                   style={{
-                    backgroundColor: searchParams.category === category.id ? category.color || "#3B82F6" : undefined,
+                    backgroundColor: category === cat.id ? cat.color || "#3B82F6" : undefined,
                   }}
                 >
-                  {category.name}
+                  {cat.name}
                 </Link>
               ))}
             </div>
@@ -117,7 +160,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
         <Suspense fallback={<div>Loading projects...</div>}>
           {projects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {projects.map((project) => (
+              {projects.map((project: ProjectWithIncludes) => (
                 <div
                   key={project.id}
                   className="bg-white dark:bg-slate-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
@@ -163,7 +206,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
                     {/* Technologies */}
                     {project.technologies.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-4">
-                        {project.technologies.slice(0, 3).map((tech, index) => (
+                        {project.technologies.slice(0, 3).map((tech: string, index: number) => (
                           <span
                             key={index}
                             className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded"
@@ -223,7 +266,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
                   No Projects Found
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  {searchParams.category 
+                  {category 
                     ? "No projects found in this category." 
                     : "No projects available yet. Add some projects from the admin panel."
                   }

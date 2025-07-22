@@ -23,7 +23,7 @@ interface Category {
   id: string;
   name: string;
   description: string | null;
-  color: string;
+  color: string | null;
   _count: { projects: number };
 }
 
@@ -526,7 +526,7 @@ const AdminDashboard = () => {
                             <div className="relative group">
                               <span 
                                 className="px-2 py-1 text-white text-xs rounded-full cursor-help"
-                                style={{ backgroundColor: project.category.color }}
+                                style={{ backgroundColor: project.category.color || "#3B82F6" }}
                               >
                                 {project.category.name}
                               </span>
@@ -756,7 +756,7 @@ const AdminDashboard = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div
                         className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: category.color }}
+                        style={{ backgroundColor: category.color || "#3B82F6" }}
                       />
                       <span className="text-sm text-gray-500">
                         {category._count.projects} projects

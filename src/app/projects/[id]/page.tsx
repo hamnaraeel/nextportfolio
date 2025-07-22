@@ -4,8 +4,16 @@ import Image from "next/image";
 import { ExternalLink, Github, ArrowLeft, Calendar, Tag } from "lucide-react";
 import { notFound } from "next/navigation";
 
+interface ProjectMedia {
+  id: string;
+  type: "IMAGE" | "VIDEO" | "THUMBNAIL";
+  url: string;
+  altText: string | null;
+  order: number;
+}
+
 interface ProjectPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 async function getProject(id: string) {
@@ -32,15 +40,16 @@ async function getProject(id: string) {
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const project = await getProject(params.id);
+  const { id } = await params;
+  const project = await getProject(id);
 
   if (!project) {
     notFound();
   }
 
-  const thumbnails = project.media.filter(m => m.type === "THUMBNAIL");
-  const images = project.media.filter(m => m.type === "IMAGE");
-  const videos = project.media.filter(m => m.type === "VIDEO");
+  const thumbnails = project.media.filter((m: ProjectMedia) => m.type === "THUMBNAIL");
+  const images = project.media.filter((m: ProjectMedia) => m.type === "IMAGE");
+  const videos = project.media.filter((m: ProjectMedia) => m.type === "VIDEO");
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
@@ -184,7 +193,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 Project Screenshots
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {images.map((image) => (
+                {images.map((image: ProjectMedia) => (
                   <div key={image.id} className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
                     <Image
                       src={image.url}
@@ -206,7 +215,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 Project Videos
               </h2>
               <div className="space-y-6">
-                {videos.map((video) => (
+                {videos.map((video: ProjectMedia) => (
                   <div key={video.id} className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
                     <video
                       src={video.url}

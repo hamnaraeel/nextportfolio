@@ -3,11 +3,12 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const media = await prisma.projectMedia.findMany({
-      where: { projectId: params.id },
+      where: { projectId: id },
       orderBy: { order: "asc" },
     });
 
@@ -18,10 +19,7 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params: _ }: { params: { id: string } }
-) {
+export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const mediaId = searchParams.get("mediaId");
