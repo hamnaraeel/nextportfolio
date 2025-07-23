@@ -1,6 +1,6 @@
 # Portfolio Website
 
-A comprehensive portfolio website built with Next.js 15, featuring project management, categories, media uploads, and an admin dashboard.
+A comprehensive portfolio website built with Next.js 15, featuring project management, categories, media uploads, and an admin dashboard. Now powered by Supabase for easy deployment and scaling!
 
 ## Features
 
@@ -12,12 +12,14 @@ A comprehensive portfolio website built with Next.js 15, featuring project manag
 - 🔍 Project filtering and search
 - 📱 Mobile-friendly responsive design
 - ⚡ Fast loading with Next.js App Router
-- 🗄️ PostgreSQL database with Prisma ORM
+- 🗄️ Supabase PostgreSQL database with Prisma ORM
+- 🚀 Ready for deployment on Vercel/Netlify
 
 ## Tech Stack
 
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS
+- **Database**: Supabase (PostgreSQL)
 - **Database**: PostgreSQL with Prisma ORM
 - **Icons**: Lucide React
 - **File Upload**: Multer + Sharp (for image processing)
@@ -38,28 +40,37 @@ A comprehensive portfolio website built with Next.js 15, featuring project manag
    npm install
    ```
 
-2. **Environment Setup**:
+2. **Supabase Setup**:
+   - Follow the detailed guide in [`SUPABASE_SETUP.md`](./SUPABASE_SETUP.md)
+   - Create a Supabase project
+   - Get your project credentials
+   
+3. **Environment Setup**:
    ```bash
    cp .env.example .env
    ```
    
-   Update the `.env` file with your database connection and other settings:
+   Update the `.env` file with your Supabase credentials:
    ```env
-   DATABASE_URL="postgresql://user:password@localhost:5432/portfolio"
-   NEXTAUTH_SECRET="your-secret-key"
-   NEXTAUTH_URL="http://localhost:3000"
+   NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+   NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+   DATABASE_URL="postgresql://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres?pgbouncer=true&connection_limit=1"
+   DIRECT_URL="postgresql://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres"
    ```
 
-3. **Database Setup**:
+4. **Database Setup**:
    ```bash
-   # Create and run database migrations
-   npm run db:migrate
+   # Generate Prisma client
+   npm run prisma:generate
+   
+   # Push schema to Supabase
+   npm run db:push
    
    # Seed the database with sample data
    npm run db:seed
    ```
 
-4. **Start Development Server**:
+5. **Start Development Server**:
    ```bash
    npm run dev
    ```
@@ -142,21 +153,27 @@ The project uses Tailwind CSS. You can customize:
 
 ## Deployment
 
-### Vercel (Recommended)
+### Quick Setup with Supabase + Vercel
 
-1. Push your code to GitHub
-2. Connect your repo to Vercel
-3. Set environment variables in Vercel dashboard
-4. Deploy!
+For the easiest deployment experience, see the detailed guide in [`DEPLOYMENT.md`](./DEPLOYMENT.md).
 
-### Other Platforms
+**Quick Steps:**
+1. ✅ Supabase project configured
+2. 📝 Push your code to GitHub  
+3. 🔗 Connect your repo to Vercel
+4. ⚙️ Set environment variables in Vercel dashboard
+5. 🚀 Deploy!
+
+### Supported Platforms
 
 The app works with any platform supporting Node.js:
 
-- Railway
-- Heroku
-- DigitalOcean App Platform
-- AWS Amplify
+- **Vercel** (Recommended) - Zero config deployment
+- **Netlify** - Great for static sites
+- **Railway** - Simple database included
+- **Heroku** - Classic platform
+- **DigitalOcean App Platform** - Full-stack hosting
+- **AWS Amplify** - AWS ecosystem
 
 ## Development Commands
 

@@ -56,6 +56,10 @@ const AdminDashboard = () => {
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [selectedProjectForMedia, setSelectedProjectForMedia] = useState<string | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{ isOpen: boolean; category: Category | null }>({
+    isOpen: false,
+    category: null,
+  });
   const [newCategory, setNewCategory] = useState({ name: "", description: "", color: "#3B82F6" });
   const [newProject, setNewProject] = useState({
     title: "",
@@ -195,6 +199,41 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Error deleting project:", error);
     }
+  };
+
+  const handleDeleteCategory = (category: Category) => {
+    setDeleteConfirmation({ isOpen: true, category });
+  };
+
+  const confirmDeleteCategory = async () => {
+    if (!deleteConfirmation.category) return;
+
+    try {
+      console.log('Attempting to delete category:', deleteConfirmation.category.id);
+      const response = await fetch(`/api/categories/${deleteConfirmation.category.id}`, {
+        method: "DELETE",
+      });
+
+      console.log('Delete response status:', response.status);
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Delete successful:', result);
+        await fetchData();
+        setDeleteConfirmation({ isOpen: false, category: null });
+      } else {
+        const errorData = await response.json();
+        console.error('Delete failed:', errorData);
+        alert(`Failed to delete category: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      alert(`Error deleting category: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const cancelDeleteCategory = () => {
+    setDeleteConfirmation({ isOpen: false, category: null });
   };
 
   if (loading) {
@@ -758,9 +797,18 @@ const AdminDashboard = () => {
                         className="w-4 h-4 rounded-full"
                         style={{ backgroundColor: category.color || "#3B82F6" }}
                       />
-                      <span className="text-sm text-gray-500">
-                        {category._count.projects} projects
-                      </span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-500">
+                          {category._count.projects} projects
+                        </span>
+                        <button
+                          onClick={() => handleDeleteCategory(category)}
+                          className="text-red-600 hover:text-red-800 p-1 rounded-md hover:bg-red-50"
+                          title="Delete category"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       {category.name}
@@ -882,6 +930,44 @@ const AdminDashboard = () => {
                 fetchData(); // Refresh projects to show new media
               }}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Delete Category Confirmation Modal */}
+      {deleteConfirmation.isOpen && deleteConfirmation.category && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="mb-4">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Confirm Delete</h2>
+              <p className="text-gray-600 mb-4">
+                Are you sure you want to delete the category "<strong>{deleteConfirmation.category.name}</strong>"?
+              </p>
+              {deleteConfirmation.category._count.projects > 0 && (
+                <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
+                  <p className="text-red-800 text-sm">
+                    <strong>Warning:</strong> This will also delete{" "}
+                    <strong>{deleteConfirmation.category._count.projects}</strong>{" "}
+                    {deleteConfirmation.category._count.projects === 1 ? "project" : "projects"}{" "}
+                    associated with this category.
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelDeleteCategory}
+                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteCategory}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Delete Category
+              </button>
+            </div>
           </div>
         </div>
       )}
