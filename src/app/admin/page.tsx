@@ -941,7 +941,7 @@ const AdminDashboard = () => {
             <div className="mb-4">
               <h2 className="text-xl font-bold text-gray-900 mb-2">Confirm Delete</h2>
               <p className="text-gray-600 mb-4">
-                Are you sure you want to delete the category "<strong>{deleteConfirmation.category.name}</strong>"?
+                Are you sure you want to delete the category &quot;<strong>{deleteConfirmation.category.name}</strong>&quot;?
               </p>
               {deleteConfirmation.category._count.projects > 0 && (
                 <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
